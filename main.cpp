@@ -62,7 +62,7 @@ void parseSpace(char* str, char** parsed)
 	}
 }
 
-//utility Function
+//utility Functions
 void firstWordOfFile(char* fileAddres){
     FILE* ptr;
     char ch;
@@ -80,6 +80,31 @@ void firstWordOfFile(char* fileAddres){
         ch = fgetc(ptr);
     }
     fclose(ptr);
+}
+
+char* topTenLine(char* fileAddres){
+    FILE* ptr;
+    char ch;
+    int lines = 0;
+    ptr = fopen(fileAddres, "r");
+
+    if (NULL == ptr) {
+        printf("file can't be opened \n");
+    }
+
+    printf("Top ten line of file is : \n");
+
+    ch = fgetc(ptr);
+    while (!feof(ptr)) {
+        printf("%c", ch);
+        if (ch == '\n')
+            lines ++;
+        if (lines >= 10)
+            break;    
+        ch = fgetc(ptr);
+    }
+    fclose(ptr);
+
 }
 
 
@@ -157,6 +182,8 @@ int ownCmdHandler(char** parsed){
             parsed[2] = "\n*";
             break;
         case 9://Show10Line
+            btopTenLine(parsed[1]);
+            returnValue = -1;
             break;
         
         default:
