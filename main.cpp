@@ -144,8 +144,17 @@ int ownCmdHandler(char** parsed){
         case 6://delEmptySpace
             break;
         case 7://ShowNotComment
+            //todo: grep -v "#" a.txt
+            parsed[3] = parsed[1];
+            parsed[0] = "grep";
+            parsed[1] = "-v";
+            parsed[2] = "#";
             break;
         case 8://NumOfRaw
+            parsed[3] = parsed[1];
+            parsed[0] = "grep";
+            parsed[1] = "-c";
+            parsed[2] = "\n*";
             break;
         case 9://Show10Line
             break;
