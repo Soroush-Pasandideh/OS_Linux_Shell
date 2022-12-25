@@ -136,7 +136,7 @@ int ownCmdHandler(char** parsed){
     ListOfOwnCmds[5] = "des";//delEmptySpace
     ListOfOwnCmds[6] = "snc";//ShowNotComment
     ListOfOwnCmds[7] = "nor";//NumOfRaw
-    ListOfOwnCmds[8] = "S10L";//Show10Line
+    ListOfOwnCmds[8] = "s10l";//Show10Line
 
 
 	for (i = 0; i < NoOfOwnCmds; i++) {
@@ -182,7 +182,7 @@ int ownCmdHandler(char** parsed){
             parsed[2] = "\n*";
             break;
         case 9://Show10Line
-            btopTenLine(parsed[1]);
+            topTenLine(parsed[1]);
             returnValue = -1;
             break;
         
@@ -233,16 +233,12 @@ void runComand(char** parsed){
 }
 
 
-
-
-int main(){
+void myMain(){
     char *parsedArgs[MAXLIST];
 	char* parsedArgsPiped[MAXLIST];
 	int execFlag = 0;
-	init_shell();
 
-
-	while (1) {
+    while (1) {
 
         printDir();
 
@@ -255,4 +251,21 @@ int main(){
         
         runComand(parsedArgs);
     }
+
+}
+
+void sig_handler(int signum){
+    myMain();
+}
+
+int main(){
+    
+	init_shell();
+
+    signal(SIGINT,sig_handler); // Register signal handler
+
+
+    myMain();
+
+	
 }
