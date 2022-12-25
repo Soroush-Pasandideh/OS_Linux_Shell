@@ -62,6 +62,26 @@ void parseSpace(char* str, char** parsed)
 	}
 }
 
+//utility Function
+void firstWordOfFile(char* fileAddres){
+    FILE* ptr;
+    char ch;
+    ptr = fopen(fileAddres, "r");
+
+    if (NULL == ptr) {
+        printf("file can't be opened \n");
+    }
+
+    printf("First word of File : \t");
+
+    ch = fgetc(ptr);
+    while (!feof(ptr) && !isWhiteSpace(ch)) {
+        printf("%c", ch);
+        ch = fgetc(ptr);
+    }
+    fclose(ptr);
+}
+
 
 
 void runComand(char** parsed);
@@ -72,7 +92,8 @@ void runComand(char** parsed);
 -1  -> My_cmd_Compleated
 */
 int ownCmdHandler(char** parsed){
-    int NoOfOwnCmds = 3, i, switchOwnArg = 0;
+    printf("%d\n" , 3);
+    int NoOfOwnCmds = 9, i, switchOwnArg = 0;
 	char* ListOfOwnCmds[NoOfOwnCmds];
 	char* username;
     char* newCmd;
@@ -85,7 +106,12 @@ int ownCmdHandler(char** parsed){
 	ListOfOwnCmds[1] = "help";
     ListOfOwnCmds[2] = "cd";
 
-    
+    ListOfOwnCmds[3] = "gfwof";//getFirstWordOfFile
+    ListOfOwnCmds[4] = "cs";//commonString
+    ListOfOwnCmds[5] = "des";//delEmptySpace
+    ListOfOwnCmds[6] = "snc";//ShowNotComment
+    ListOfOwnCmds[7] = "nor";//NumOfRaw
+    ListOfOwnCmds[8] = "S10L";//Show10Line
 
 
 	for (i = 0; i < NoOfOwnCmds; i++) {
@@ -94,6 +120,8 @@ int ownCmdHandler(char** parsed){
 			break;
 		}
 	}
+
+    printf("%d\n",switchOwnArg);
 
 	switch (switchOwnArg) {
         case 1://exit
@@ -107,8 +135,23 @@ int ownCmdHandler(char** parsed){
         case 3://cd
             returnValue = 2;
             break; 
+        case 4://getFirstOfFile
+            firstWordOfFile(fileAddres);
+            returnValue = -1;
+            break;
+        case 5://commonString
+            break;
+        case 6://delEmptySpace
+            break;
+        case 7://ShowNotComment
+            break;
+        case 8://NumOfRaw
+            break;
+        case 9://Show10Line
+            break;
         
         default:
+            printf("default");
             break;
 	}
 
