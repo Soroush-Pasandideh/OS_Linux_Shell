@@ -117,8 +117,10 @@ void delEmptySpace(char *fileAddres) {
 
     ch[0] = fgetc(ptr);
     while (!feof(ptr)) {
-        if (strcmp(ch, " ") != 0)
+//        printf("* %c *", ch[0]);
+        if (ch[0]!=' ') {
             printf("%c", ch[0]);
+        }
         ch[0] = fgetc(ptr);
     }
     fclose(ptr);
