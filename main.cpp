@@ -14,57 +14,54 @@
 #define MAXCOM 1000 // max number of letters to be supported
 #define MAXLIST 100 // max number of commands to be supported
 
-char* inputString;
+char *inputString;
 
-void clearScrean(){
+void clearScrean() {
     printf("\033[H\033[J");
-} 
+}
 
 
-bool isWhiteSpace(char ch){
+bool isWhiteSpace(char ch) {
     return ch == ' ' || ch == '\t' || ch == '\n';
 }
 
-void init_shell()
-{
-	clearScrean();
-	printf("\n\n\n\n******************"
-		"************************");
-	printf("\n\n\n\t****MY SHELL****");
-	printf("\n\n\t-USE AT YOUR OWN RISK-");
-	printf("\n\n\n\n*******************"
-		"***********************");
-	char* username = getenv("USER");//get User name
-	printf("\n\n\nUSER is: @%s", username);
-	printf("\n");
+void init_shell() {
+    clearScrean();
+    printf("\n\n\n\n******************"
+           "************************");
+    printf("\n\n\n\t****MY SHELL****");
+    printf("\n\n\t-USE AT YOUR OWN RISK-");
+    printf("\n\n\n\n*******************"
+           "***********************");
+    char *username = getenv("USER");//get User name
+    printf("\n\n\nUSER is: @%s", username);
+    printf("\n");
 }
 
-void printDir()
-{
-	char cwd[1024];
-	getcwd(cwd, sizeof(cwd));
-	printf("\nDir: %s", cwd);
+void printDir() {
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    printf("\nDir: %s", cwd);
 }
 
 // function for parsing command words
-void parseSpace(char* str, char** parsed)
-{
-    printf("%d\n" , 1);
-	int i;
+void parseSpace(char *str, char **parsed) {
+    printf("%d\n", 1);
+    int i;
 
-	for (i = 0; i < MAXLIST; i++) {
-		parsed[i] = strsep(&str, " ");
+    for (i = 0; i < MAXLIST; i++) {
+        parsed[i] = strsep(&str, " ");
 
-		if (parsed[i] == NULL)
-			break;
-		if (strlen(parsed[i]) == 0)
-			i--;
-	}
+        if (parsed[i] == NULL)
+            break;
+        if (strlen(parsed[i]) == 0)
+            i--;
+    }
 }
 
 //utility Functions
-void firstWordOfFile(char* fileAddres){
-    FILE* ptr;
+void firstWordOfFile(char *fileAddres) {
+    FILE *ptr;
     char ch;
     ptr = fopen(fileAddres, "r");
 
@@ -82,8 +79,8 @@ void firstWordOfFile(char* fileAddres){
     fclose(ptr);
 }
 
-char* topTenLine(char* fileAddres){
-    FILE* ptr;
+char *topTenLine(char *fileAddres) {
+    FILE *ptr;
     char ch;
     int lines = 0;
     ptr = fopen(fileAddres, "r");
@@ -98,37 +95,57 @@ char* topTenLine(char* fileAddres){
     while (!feof(ptr)) {
         printf("%c", ch);
         if (ch == '\n')
-            lines ++;
+            lines++;
         if (lines >= 10)
-            break;    
+            break;
         ch = fgetc(ptr);
     }
     fclose(ptr);
 
 }
 
+void delEmptySpace(char *fileAddres) {
+    FILE *ptr;
+    char ch[1];
+    ptr = fopen(fileAddres, "r");
+
+    if (NULL == ptr) {
+        printf("file can't be opened \n");
+    }
+
+    printf("File text without spaces : \t");
+
+    ch[0] = fgetc(ptr);
+    while (!feof(ptr)) {
+        if (strcmp(ch, " ") != 0)
+            printf("%c", ch[0]);
+        ch[0] = fgetc(ptr);
+    }
+    fclose(ptr);
+}
 
 
-void runComand(char** parsed);
+void runComand(char **parsed);
+
 /*
  0  -> not My Cmd
  1  -> exit
  2  -> cd
--1  -> My_cmd_Compleated
+-1  -> My_cmd_Completed
 */
-int ownCmdHandler(char** parsed){
-    printf("%d\n" , 3);
+int ownCmdHandler(char **parsed) {
+    printf("%d\n", 3);
     int NoOfOwnCmds = 9, i, switchOwnArg = 0;
-	char* ListOfOwnCmds[NoOfOwnCmds];
-	char* username;
-    char* newCmd;
-    char** newParsed;
-    char* fileAddres = parsed[1];
+    char *ListOfOwnCmds[NoOfOwnCmds];
+    char *username;
+    char *newCmd;
+    char **newParsed;
+    char *fileAddres = parsed[1];
     int returnValue = 0;
-    pid_t pid , pid2;
+    pid_t pid, pid2;
 
-	ListOfOwnCmds[0] = "exit";
-	ListOfOwnCmds[1] = "help";
+    ListOfOwnCmds[0] = "exit";
+    ListOfOwnCmds[1] = "help";
     ListOfOwnCmds[2] = "cd";
 
     ListOfOwnCmds[3] = "gfwof";//getFirstWordOfFile
@@ -139,16 +156,16 @@ int ownCmdHandler(char** parsed){
     ListOfOwnCmds[8] = "s10l";//Show10Line
 
 
-	for (i = 0; i < NoOfOwnCmds; i++) {
-		if (strcmp(parsed[0], ListOfOwnCmds[i]) == 0) {
-			switchOwnArg = i + 1;
-			break;
-		}
-	}
+    for (i = 0; i < NoOfOwnCmds; i++) {
+        if (strcmp(parsed[0], ListOfOwnCmds[i]) == 0) {
+            switchOwnArg = i + 1;
+            break;
+        }
+    }
 
-    printf("%d\n",switchOwnArg);
+    printf("%d\n", switchOwnArg);
 
-	switch (switchOwnArg) {
+    switch (switchOwnArg) {
         case 1://exit
             printf("\nGoodbye\n");
             returnValue = 1;
@@ -159,7 +176,7 @@ int ownCmdHandler(char** parsed){
             break;
         case 3://cd
             returnValue = 2;
-            break; 
+            break;
         case 4://getFirstOfFile
             firstWordOfFile(fileAddres);
             returnValue = -1;
@@ -167,6 +184,8 @@ int ownCmdHandler(char** parsed){
         case 5://commonString
             break;
         case 6://delEmptySpace
+            delEmptySpace(fileAddres);
+            returnValue = -1;
             break;
         case 7://ShowNotComment
             //todo: grep -v "#" a.txt
@@ -185,23 +204,23 @@ int ownCmdHandler(char** parsed){
             topTenLine(parsed[1]);
             returnValue = -1;
             break;
-        
+
         default:
             printf("default");
             break;
-	}
+    }
 
-	return returnValue;
+    return returnValue;
 }
 
-void runComand(char** parsed){
+void runComand(char **parsed) {
     pid_t pid = fork();
 
     if (pid == -1) { // error fork
         printf("\nFailed forking child..");
-    } else if (pid == 0) { //child 
+    } else if (pid == 0) { //child
         int d = ownCmdHandler(parsed);
-        printf("\n-----\n%s\n",parsed[0]);
+        printf("\n-----\n%s\n", parsed[0]);
         if (d != 0)
             exit(d);
         else if (execvp(parsed[0], parsed) < 0) {
@@ -213,19 +232,19 @@ void runComand(char** parsed){
         //wait(NULL);
 
         int status;
-        if ( waitpid(pid, &status, 0) == -1 ) {
+        if (waitpid(pid, &status, 0) == -1) {
             perror("waitpid failed");
             return;
         }
 
-        if ( WIFEXITED(status) ) {
+        if (WIFEXITED(status)) {
             const int es = WEXITSTATUS(status);
             if (es == 1)
                 exit(0);
             else if (es == 2)
                 chdir(parsed[1]);
-            else 
-                printf("ES : %d \n" , es);
+            else
+                printf("ES : %d \n", es);
 
         }
 
@@ -233,10 +252,10 @@ void runComand(char** parsed){
 }
 
 
-void myMain(){
+void myMain() {
     char *parsedArgs[MAXLIST];
-	char* parsedArgsPiped[MAXLIST];
-	int execFlag = 0;
+    char *parsedArgsPiped[MAXLIST];
+    int execFlag = 0;
 
     while (1) {
 
@@ -245,27 +264,27 @@ void myMain(){
         inputString = readline(" \n>>>\n ");
 
         if (strlen(inputString) == 0)
-			continue;
+            continue;
 
         parseSpace(inputString, parsedArgs);
-        
+
         runComand(parsedArgs);
     }
 
 }
 
-void sig_handler(int signum){
+void sig_handler(int signum) {
     myMain();
 }
 
-int main(){
-    
-	init_shell();
+int main() {
 
-    signal(SIGINT,sig_handler); // Register signal handler
+    init_shell();
+
+    signal(SIGINT, sig_handler); // Register signal handler
 
 
     myMain();
 
-	
+
 }
