@@ -36,6 +36,7 @@ void init_shell() {
     char *username = getenv("USER");//get User name
     printf("\n\n\nUSER is: @%s", username);
     printf("\n");
+    read_history("/home/mmmubnt/Documents/GitHub/OS_Linux_Shell/history.txt");
 }
 
 void printDir() {
@@ -248,6 +249,9 @@ void myMain() {
         printDir();
 
         inputString = readline(" \n>>>\n ");
+
+        add_history(inputString);
+        write_history("/home/mmmubnt/Documents/GitHub/OS_Linux_Shell/history.txt");
 
         if (strlen(inputString) == 0)
             continue;
