@@ -60,25 +60,6 @@ void parseSpace(char *str, char **parsed) {
 }
 
 //utility Functions
-void firstWordOfFile(char *fileAddres) {
-    FILE *ptr;
-    char ch;
-    ptr = fopen(fileAddres, "r");
-
-    if (NULL == ptr) {
-        printf("file can't be opened \n");
-    }
-
-    printf("First word of File : \t");
-
-    ch = fgetc(ptr);
-    while (!feof(ptr) && !isWhiteSpace(ch)) {
-        printf("%c", ch);
-        ch = fgetc(ptr);
-    }
-    fclose(ptr);
-}
-
 char *topTenLine(char *fileAddres) {
     FILE *ptr;
     char ch;
@@ -150,7 +131,7 @@ int ownCmdHandler(char **parsed) {
     ListOfOwnCmds[1] = "help";
     ListOfOwnCmds[2] = "cd";
 
-    ListOfOwnCmds[3] = "gfwof";//getFirstWordOfFile
+    ListOfOwnCmds[3] = "gfwol";//getFirstWordOfLine
     ListOfOwnCmds[4] = "cs";//commonString
     ListOfOwnCmds[5] = "des";//delEmptySpace
     ListOfOwnCmds[6] = "snc";//ShowNotComment
@@ -179,9 +160,12 @@ int ownCmdHandler(char **parsed) {
         case 3://cd
             returnValue = 2;
             break;
-        case 4://getFirstOfFile
-            firstWordOfFile(fileAddres);
-            returnValue = -1;
+        case 4://getFirstWordOfLine
+            //todo : grep -Eo '^[^ ]+' baseFileTest.txt
+            parsed[3] = parsed[1];
+            parsed[0] = "grep";
+            parsed[1] = "-Eo";
+            parsed[2] = "^[^ ]+";
             break;
         case 5://commonString
             break;
