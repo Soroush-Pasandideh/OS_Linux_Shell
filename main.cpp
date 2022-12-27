@@ -10,11 +10,16 @@
 
 #include<signal.h>
 
+#include <setjmp.h>
+#include <errno.h>
+#include <error.h>
+#include <getopt.h>
 
 #define MAXCOM 1000 // max number of letters to be supported
 #define MAXLIST 100 // max number of commands to be supported
 
 char *inputString;
+sigjmp_buf ctrlc_buf;
 
 void clearScrean() {
     printf("\033[H\033[J");
@@ -246,6 +251,8 @@ void myMain() {
 
     while (1) {
 
+        while ( sigsetjmp( ctrlc_buf, 1 ) != 0 );
+
         printDir();
 
         inputString = readline(" \n>>>\n ");
@@ -264,14 +271,24 @@ void myMain() {
 }
 
 void sig_handler(int signum) {
-    myMain();
+    //myMain();
+    if (signum == SIGINT) {
+        printf("You pressed Ctrl+C\n");
+        siglongjmp(ctrlc_buf, 1);
+    }
 }
 
 int main() {
 
     init_shell();
 
-    signal(SIGINT, sig_handler); // Register signal handler
+    if (signal(SIGINT, sig_handler) == SIG_ERR) {
+        printf("failed to register interrupts with kernel\n");
+    }
+
+    //setup_readline();
+
+    //signal(SIGINT, sig_handler); // Register signal handler
 
 
     myMain();
