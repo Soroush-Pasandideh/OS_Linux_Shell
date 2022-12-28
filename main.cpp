@@ -17,6 +17,7 @@
 
 #define MAXCOM 1000 // max number of letters to be supported
 #define MAXLIST 100 // max number of commands to be supported
+#define HISTORY_ADDRESS "/home/mmmubnt/Documents/GitHub/OS_Linux_Shell/history.txt"
 
 char *inputString;
 sigjmp_buf ctrlc_buf;
@@ -41,7 +42,6 @@ void init_shell() {
     char *username = getenv("USER");//get User name
     printf("\n\n\nUSER is: @%s", username);
     printf("\n");
-    read_history("/home/mmmubnt/Documents/GitHub/OS_Linux_Shell/history.txt");
 }
 
 void printDir() {
@@ -243,11 +243,26 @@ void runComand(char **parsed) {
     }
 }
 
+void sig_handler(int signum) {
+    if (signum == SIGINT) {
+        printf("You pressed Ctrl+C\n");
+        siglongjmp(ctrlc_buf, 1);
+    }
+}
 
-void myMain() {
+int main() {
     char *parsedArgs[MAXLIST];
     char *parsedArgsPiped[MAXLIST];
     int execFlag = 0;
+
+    init_shell();
+
+    read_history(HISTORY_ADDRESS);
+
+
+    if (signal(SIGINT, sig_handler) == SIG_ERR) {
+        printf("failed to register interrupts with kernel\n");
+    }
 
     while (1) {
 
@@ -258,7 +273,7 @@ void myMain() {
         inputString = readline(" \n>>>\n ");
 
         add_history(inputString);
-        write_history("/home/mmmubnt/Documents/GitHub/OS_Linux_Shell/history.txt");
+        write_history(HISTORY_ADDRESS);
 
         if (strlen(inputString) == 0)
             continue;
@@ -267,31 +282,6 @@ void myMain() {
 
         runComand(parsedArgs);
     }
-
-}
-
-void sig_handler(int signum) {
-    //myMain();
-    if (signum == SIGINT) {
-        printf("You pressed Ctrl+C\n");
-        siglongjmp(ctrlc_buf, 1);
-    }
-}
-
-int main() {
-
-    init_shell();
-
-    if (signal(SIGINT, sig_handler) == SIG_ERR) {
-        printf("failed to register interrupts with kernel\n");
-    }
-
-    //setup_readline();
-
-    //signal(SIGINT, sig_handler); // Register signal handler
-
-
-    myMain();
 
 
 }
