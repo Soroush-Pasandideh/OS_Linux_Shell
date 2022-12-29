@@ -1,3 +1,5 @@
+#include<iostream>
+#include<fstream>
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
@@ -6,21 +8,16 @@
 #include<sys/wait.h>
 #include<readline/readline.h>
 #include<readline/history.h>
-
-
 #include<signal.h>
 
-#include <setjmp.h>
-#include <errno.h>
-#include <error.h>
-#include <getopt.h>
+//ssize_t getline(char **pString, size_t *pInt, FILE *pIobuf);
 
 #define MAXCOM 1000 // max number of letters to be supported
 #define MAXLIST 100 // max number of commands to be supported
-#define HISTORY_ADDRESS "/home/mmmubnt/Documents/GitHub/OS_Linux_Shell/history.txt"
+#define MAX_FILE_NAME 1000
+
 
 char *inputString;
-sigjmp_buf ctrlc_buf;
 
 void clearScrean() {
     printf("\033[H\033[J");
@@ -66,6 +63,25 @@ void parseSpace(char *str, char **parsed) {
 }
 
 //utility Functions
+void firstWordOfFile(char *fileAddres) {
+    FILE *ptr;
+    char ch;
+    ptr = fopen(fileAddres, "r");
+
+    if (NULL == ptr) {
+        printf("file can't be opened \n");
+    }
+
+    printf("First word of File : \t");
+
+    ch = fgetc(ptr);
+    while (!feof(ptr) && !isWhiteSpace(ch)) {
+        printf("%c", ch);
+        ch = fgetc(ptr);
+    }
+    fclose(ptr);
+}
+
 char *topTenLine(char *fileAddres) {
     FILE *ptr;
     char ch;
@@ -94,7 +110,8 @@ char *topTenLine(char *fileAddres) {
 void delEmptySpace(char *fileAddres) {
     FILE *ptr;
     char ch[1];
-    ptr = fopen(fileAddres, "r");
+    char result[1];
+    ptr = fopen(fileAddres, "r+");
 
     if (NULL == ptr) {
         printf("file can't be opened \n");
@@ -103,9 +120,10 @@ void delEmptySpace(char *fileAddres) {
     printf("File text without spaces : \t");
 
     ch[0] = fgetc(ptr);
+    strcat(&result[0], &ch[0]);
+    printf("%s", result);
     while (!feof(ptr)) {
-//        printf("* %c *", ch[0]);
-        if (ch[0]!=' ') {
+        if (ch[0] != ' ') {
             printf("%c", ch[0]);
         }
         ch[0] = fgetc(ptr);
@@ -113,15 +131,29 @@ void delEmptySpace(char *fileAddres) {
     fclose(ptr);
 }
 
+int fileWordNum(char *fileAddres) {
+    FILE *file;
+    int count = 0;
+    file = fopen(fileAddres, "r");
+    char word[20];
+    while (!feof(file)) {
+        fscanf(file, "%s", word);
+        count++;
+    }
+    return count;
+}
+
+//void mostCommonString(char *fileAddres) {}
+
 
 void runComand(char **parsed);
-
 /*
  0  -> not My Cmd
  1  -> exit
  2  -> cd
 -1  -> My_cmd_Completed
 */
+
 int ownCmdHandler(char **parsed) {
     printf("%d\n", 3);
     int NoOfOwnCmds = 9, i, switchOwnArg = 0;
@@ -137,7 +169,7 @@ int ownCmdHandler(char **parsed) {
     ListOfOwnCmds[1] = "help";
     ListOfOwnCmds[2] = "cd";
 
-    ListOfOwnCmds[3] = "gfwol";//getFirstWordOfLine
+    ListOfOwnCmds[3] = "gfwof";//getFirstWordOfFile
     ListOfOwnCmds[4] = "cs";//commonString
     ListOfOwnCmds[5] = "des";//delEmptySpace
     ListOfOwnCmds[6] = "snc";//ShowNotComment
@@ -166,14 +198,13 @@ int ownCmdHandler(char **parsed) {
         case 3://cd
             returnValue = 2;
             break;
-        case 4://getFirstWordOfLine
-            //todo : grep -Eo '^[^ ]+' baseFileTest.txt
-            parsed[3] = parsed[1];
-            parsed[0] = "grep";
-            parsed[1] = "-Eo";
-            parsed[2] = "^[^ ]+";
+        case 4://getFirstOfFile
+            firstWordOfFile(fileAddres);
+            returnValue = -1;
             break;
         case 5://commonString
+            mostCommonString(fileAddres);
+            returnValue = -1;
             break;
         case 6://delEmptySpace
             delEmptySpace(fileAddres);
@@ -243,37 +274,17 @@ void runComand(char **parsed) {
     }
 }
 
-void sig_handler(int signum) {
-    if (signum == SIGINT) {
-        printf("You pressed Ctrl+C\n");
-        siglongjmp(ctrlc_buf, 1);
-    }
-}
 
-int main() {
+void myMain() {
     char *parsedArgs[MAXLIST];
     char *parsedArgsPiped[MAXLIST];
     int execFlag = 0;
 
-    init_shell();
-
-    read_history(HISTORY_ADDRESS);
-
-
-    if (signal(SIGINT, sig_handler) == SIG_ERR) {
-        printf("failed to register interrupts with kernel\n");
-    }
-
     while (1) {
-
-        while ( sigsetjmp( ctrlc_buf, 1 ) != 0 );
 
         printDir();
 
         inputString = readline(" \n>>>\n ");
-
-        add_history(inputString);
-        write_history(HISTORY_ADDRESS);
 
         if (strlen(inputString) == 0)
             continue;
@@ -282,6 +293,21 @@ int main() {
 
         runComand(parsedArgs);
     }
+
+}
+
+void sig_handler(int signum) {
+    myMain();
+}
+
+int main() {
+
+    init_shell();
+
+    signal(SIGINT, sig_handler); // Register signal handler
+
+
+    myMain();
 
 
 }
