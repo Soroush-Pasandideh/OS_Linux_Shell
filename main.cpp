@@ -143,10 +143,61 @@ int fileWordNum(char *fileAddres) {
     return count;
 }
 
-//void mostCommonString(char *fileAddres) {}
+void mostCommonString(char *fileAddres) {
+    FILE *file;
+    file = fopen(fileAddres, "r");
+    if (NULL == file) {
+        printf("file can't be opened \n");
+    }
+    const int numOfWords = fileWordNum(fileAddres);
+    char words[numOfWords][30]; //array of strings which contains words
+    char word[30];
+    int freqOfWords[numOfWords];
+
+    for (int i = 0; i < numOfWords; i++) {
+        freqOfWords[i] = 0;
+    }
+
+    for (int i = 0; i < numOfWords; i++) {
+        fscanf(file, "%s", word);
+        strcpy(words[i], word);
+    }
+
+    char currentWord[30];
+    for (int i = 0; i < numOfWords; i++) {
+        strcpy(currentWord, words[i]);
+        for (int j = i + 1; j < numOfWords; j++) {
+            if (strcmp(currentWord, words[j]) == 0) {
+                freqOfWords[i]++;
+            }
+        }
+    }
+    int maxFreq = -1;
+    int index[numOfWords];
+    int count = 0 ;
+    for (int i = 0; i < numOfWords; i++) {
+        if (freqOfWords[i] > maxFreq) {
+            count = 1;
+            for (int k = 0; k < numOfWords; k++) {
+                index[i] = 0;
+            }
+            maxFreq = freqOfWords[i];
+            index[0] = i;
+        } else if (freqOfWords[i] == maxFreq) {
+            count++;
+            index[count-1] = i;
+        }
+    }
+    printf("most common word is:\n");
+    for (int i = 0; i < count; i++) {
+        printf("%s: %d times\n", words[index[i]], maxFreq + 1);
+    }
+
+}
 
 
 void runComand(char **parsed);
+
 /*
  0  -> not My Cmd
  1  -> exit
