@@ -102,7 +102,7 @@ void delEmptySpace(char *fileAddres) {
 //''''''''''''''''''''''''''''''''''
     char c;
     for (c = getc(ptr); c != EOF; c = getc(ptr)) {
-        if (c != 32 && c != 13) {
+        if (c != 32 && c != 13 && c != 10) {
             countChars = countChars + 1;
         }
     }
@@ -118,7 +118,7 @@ void delEmptySpace(char *fileAddres) {
     char c2;
     int count = 0;
     for (c2 = getc(ptr); c2 != EOF; c2 = getc(ptr)) {
-        if (c2 != 32 && c2 != 13) {
+        if (c2 != 32 && c2 != 13 && c2 != 10) {
             result[count] = c2;
             count++;
         }
