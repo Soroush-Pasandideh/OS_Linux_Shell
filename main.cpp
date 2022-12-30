@@ -92,7 +92,7 @@ char *topTenLine(char *fileAddres) {
 }
 
 void delEmptySpace(char *fileAddres) {
-    FILE *ptr, *ptr2;
+    FILE *ptr, *ptr2, *ptr3;
     ptr = fopen(fileAddres, "r+");
 
     if (NULL == ptr) {
@@ -129,9 +129,15 @@ void delEmptySpace(char *fileAddres) {
     for (int i = 0; i < countChars; ++i) {
         fprintf(ptr2, "%c", result[i]);
     }
+    fclose(ptr2);
 
+    ptr3 = fopen(fileAddres,"r");
+
+    char c3;
     for (int i = 0; i < countChars; ++i) {
-        printf("%c", result[i]);
+        c3 = getc(ptr3);
+        printf("%c",c3);
+
     }
 
     fclose(ptr2);
