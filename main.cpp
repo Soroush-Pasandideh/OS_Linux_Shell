@@ -36,7 +36,7 @@ void init_shell() {
     printf("\n\n\n\n******************"
            "************************");
     printf("\n\n\n\t****MY SHELL****");
-    printf("\n\n\t-USE AT YOUR OWN RISK-");
+    printf("\n\n\t-Soroush & Mohammad-");
     printf("\n\n\n\n*******************"
            "***********************");
     char *username = getenv("USER");//get User name
