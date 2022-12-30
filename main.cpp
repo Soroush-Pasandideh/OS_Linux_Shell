@@ -93,39 +93,48 @@ char *topTenLine(char *fileAddres) {
 
 void delEmptySpace(char *fileAddres) {
     FILE *ptr, *ptr2;
-    char ch[1];
-    char temp[1];
     ptr = fopen(fileAddres, "r+");
-    ptr2 = fopen(fileAddres, "r+");
 
     if (NULL == ptr) {
         printf("file can't be opened \n");
     }
-    temp[0] = fgetc(ptr2);
     int countChars = 0;
-    while (!feof(ptr2)) {
-        if (temp[0] != ' ') {
-            countChars++;
+//''''''''''''''''''''''''''''''''''
+    char c;
+    for (c = getc(ptr); c != EOF; c = getc(ptr)) {
+        if (c != 32 && c != 13) {
+            countChars = countChars + 1;
         }
-        ch[0] = fgetc(ptr2);
     }
+//'''''''''''''''''''''''''''''''''''
+    fclose(ptr);
+    ptr2 = fopen(fileAddres, "r+");
+
+//    printf("#%d#\n", countChars);
     char result[countChars];
 
     printf("File text without spaces :\n");
-
-    ch[0] = fgetc(ptr);
-    int i = 0;
-    while (!feof(ptr)) {
-        if (ch[0] != ' ') {
-            result[i] = ch[0];
-            i++;
+//'''''''''''''''''''''''''''''''''''''''''''''''''''
+    char c2;
+    int count = 0;
+    for (c2 = getc(ptr); c2 != EOF; c2 = getc(ptr)) {
+        if (c2 != 32 && c2 != 13) {
+            result[count] = c2;
+            count++;
         }
-        ch[0] = fgetc(ptr);
     }
+//'''''''''''''''''''''''''''''''''''''''''''''''''''
     freopen(fileAddres, "w", ptr);
-    fprintf(ptr, "%s", result);
-    printf("%s", result);
-    fclose(ptr);
+
+    for (int i = 0; i < countChars; ++i) {
+        fprintf(ptr2, "%c", result[i]);
+    }
+
+    for (int i = 0; i < countChars; ++i) {
+        printf("%c", result[i]);
+    }
+
+    fclose(ptr2);
 }
 
 int fileWordNum(char *fileAddres) {
