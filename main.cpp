@@ -92,27 +92,105 @@ char *topTenLine(char *fileAddres) {
 }
 
 void delEmptySpace(char *fileAddres) {
-    FILE *ptr;
+    FILE *ptr, *ptr2;
     char ch[1];
-    ptr = fopen(fileAddres, "r");
+    char temp[1];
+    ptr = fopen(fileAddres, "r+");
+    ptr2 = fopen(fileAddres, "r+");
 
     if (NULL == ptr) {
         printf("file can't be opened \n");
     }
+    temp[0] = fgetc(ptr2);
+    int countChars = 0;
+    while (!feof(ptr2)) {
+        if (temp[0] != ' ') {
+            countChars++;
+        }
+        ch[0] = fgetc(ptr2);
+    }
+    char result[countChars];
 
-    printf("File text without spaces : \t");
+    printf("File text without spaces :\n");
 
     ch[0] = fgetc(ptr);
+    int i = 0;
     while (!feof(ptr)) {
-//        printf("* %c *", ch[0]);
-        if (ch[0]!=' ') {
-            printf("%c", ch[0]);
+        if (ch[0] != ' ') {
+            result[i] = ch[0];
+            i++;
         }
         ch[0] = fgetc(ptr);
     }
+    freopen(fileAddres, "w", ptr);
+    fprintf(ptr, "%s", result);
+    printf("%s", result);
     fclose(ptr);
 }
 
+int fileWordNum(char *fileAddres) {
+    FILE *file;
+    int count = 0;
+    file = fopen(fileAddres, "r");
+    char word[20];
+    while (!feof(file)) {
+        fscanf(file, "%s", word);
+        count++;
+    }
+    return count;
+}
+
+void mostCommonString(char *fileAddres) {
+    FILE *file;
+    file = fopen(fileAddres, "r");
+    if (NULL == file) {
+        printf("file can't be opened \n");
+    }
+    const int numOfWords = fileWordNum(fileAddres);
+    char words[numOfWords][30]; //array of strings which contains words
+    char word[30];
+    int freqOfWords[numOfWords];
+
+    for (int i = 0; i < numOfWords; i++) {
+        freqOfWords[i] = 0;
+    }
+
+    for (int i = 0; i < numOfWords; i++) {
+        fscanf(file, "%s", word);
+        strcpy(words[i], word);
+    }
+
+    char currentWord[30];
+    for (int i = 0; i < numOfWords; i++) {
+        strcpy(currentWord, words[i]);
+        for (int j = i + 1; j < numOfWords; j++) {
+            if (strcmp(currentWord, words[j]) == 0) {
+                freqOfWords[i]++;
+            }
+        }
+    }
+    int maxFreq = -1;
+    int index[numOfWords];
+    int count = 0;
+    for (int i = 0; i < numOfWords; i++) {
+        if (freqOfWords[i] > maxFreq) {
+            count = 1;
+            for (int k = 0; k < numOfWords; k++) {
+                index[i] = 0;
+            }
+            maxFreq = freqOfWords[i];
+            index[0] = i;
+        } else if (freqOfWords[i] == maxFreq) {
+            count++;
+            index[count - 1] = i;
+        }
+    }
+    printf("most common word is:\n");
+    for (int i = 0; i < count; i++) {
+        printf("%s -> %d times\n", words[index[i]], maxFreq + 1);
+    }
+
+}
 
 void runComand(char **parsed);
 
@@ -122,6 +200,7 @@ void runComand(char **parsed);
  2  -> cd
 -1  -> My_cmd_Completed
 */
+
 int ownCmdHandler(char **parsed) {
     printf("%d\n", 3);
     int NoOfOwnCmds = 9, i, switchOwnArg = 0;
@@ -174,6 +253,8 @@ int ownCmdHandler(char **parsed) {
             parsed[2] = "^[^ ]+";
             break;
         case 5://commonString
+            mostCommonString(fileAddres);
+            returnValue = -1;
             break;
         case 6://delEmptySpace
             delEmptySpace(fileAddres);
@@ -266,7 +347,7 @@ int main() {
 
     while (1) {
 
-        while ( sigsetjmp( ctrlc_buf, 1 ) != 0 );
+        while (sigsetjmp(ctrlc_buf, 1) != 0);
 
         printDir();
 
