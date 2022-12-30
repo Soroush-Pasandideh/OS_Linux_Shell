@@ -43,4 +43,7 @@ You can run this command as follows
 ```
 s10l fileAddress
 ```
+## some option of this shell
+This shell is not closed by pressing ctrl+c and is closed by ``` exit ``` command. When receiving this combination, the current line is interrupted and a new prompt is printed.
 
+This shell also supports the history feature and saves them in a file with the specified address, and the history is not deleted when the shell is closed.
