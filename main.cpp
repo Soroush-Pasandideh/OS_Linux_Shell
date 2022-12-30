@@ -52,7 +52,6 @@ void printDir() {
 
 // function for parsing command words
 void parseSpace(char *str, char **parsed) {
-    printf("%d\n", 1);
     int i;
 
     for (i = 0; i < MAXLIST; i++) {
@@ -102,7 +101,7 @@ void delEmptySpace(char *fileAddres) {
 //''''''''''''''''''''''''''''''''''
     char c;
     for (c = getc(ptr); c != EOF; c = getc(ptr)) {
-        if (c != 32 && c != 13 && c != 10) {
+        if (c != 32 && c != 13 && c != 10 && c != '\t') {
             countChars = countChars + 1;
         }
     }
@@ -118,7 +117,7 @@ void delEmptySpace(char *fileAddres) {
     char c2;
     int count = 0;
     for (c2 = getc(ptr); c2 != EOF; c2 = getc(ptr)) {
-        if (c2 != 32 && c2 != 13 && c2 != 10) {
+        if (c2 != 32 && c2 != 13 && c2 != 10 && c2 != '\t')  {
             result[count] = c2;
             count++;
         }
@@ -217,7 +216,6 @@ void runComand(char **parsed);
 */
 
 int ownCmdHandler(char **parsed) {
-    printf("%d\n", 3);
     int NoOfOwnCmds = 9, i, switchOwnArg = 0;
     char *ListOfOwnCmds[NoOfOwnCmds];
     char *username;
@@ -308,7 +306,6 @@ void runComand(char **parsed) {
         printf("\nFailed forking child..");
     } else if (pid == 0) { //child
         int d = ownCmdHandler(parsed);
-        printf("\n-----\n%s\n", parsed[0]);
         if (d != 0)
             exit(d);
         else if (execvp(parsed[0], parsed) < 0) {
@@ -331,8 +328,6 @@ void runComand(char **parsed) {
                 exit(0);
             else if (es == 2)
                 chdir(parsed[1]);
-            else
-                printf("ES : %d \n", es);
 
         }
 
